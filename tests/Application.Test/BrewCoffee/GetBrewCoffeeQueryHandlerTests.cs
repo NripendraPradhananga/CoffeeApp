@@ -1,4 +1,5 @@
 ﻿using Application.Abstraction;
+using Application.Abstraction.Dtos;
 using Application.BrewCoffee;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -69,6 +70,63 @@ public class GetBrewCoffeeQueryHandlerTests
         _mockDateTimeProvider.Setup(x => x.Now).Returns(new DateTime(2025, 3, 31));
         _mockApiCallCounterService.Setup(x => x.IncrementCounterAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(1);
+
+        // Act
+        var result = await _handler.Handle(new GetBrewCoffeeQuery(), CancellationToken.None);
+
+        // Assert
+        Assert.Equal(BrewCoffeeStatus.Brewed, result.Status);
+        Assert.Equal("Your piping hot coffee is ready", result.Message);
+        Assert.NotNull(result.Prepared);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnBrewedWithHotCoffeeMessage_WhenTemperatureIsBelow30()
+    {
+        // Arrange
+        _mockDateTimeProvider.Setup(x => x.Now).Returns(new DateTime(2025, 3, 31));
+        _mockApiCallCounterService.Setup(x => x.IncrementCounterAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+        _mockWeatherService.Setup(x => x.GetWeatherAsync(It.IsAny<string>()))
+            .ReturnsAsync(new WeatherResponse(25));
+
+        // Act
+        var result = await _handler.Handle(new GetBrewCoffeeQuery(), CancellationToken.None);
+
+        // Assert
+        Assert.Equal(BrewCoffeeStatus.Brewed, result.Status);
+        Assert.Equal("Your piping hot coffee is ready", result.Message);
+        Assert.NotNull(result.Prepared);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnBrewedWithIcedCoffeeMessage_WhenTemperatureIsAbove30()
+    {
+        // Arrange
+        _mockDateTimeProvider.Setup(x => x.Now).Returns(new DateTime(2025, 3, 31));
+        _mockApiCallCounterService.Setup(x => x.IncrementCounterAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+        _mockWeatherService.Setup(x => x.GetWeatherAsync(It.IsAny<string>()))
+            .ReturnsAsync(new WeatherResponse(35));
+
+        // Act
+        var result = await _handler.Handle(new GetBrewCoffeeQuery(), CancellationToken.None);
+
+        // Assert
+        Assert.Equal(BrewCoffeeStatus.Brewed, result.Status);
+        Assert.Equal("Your refreshing iced coffee is ready", result.Message);
+        Assert.NotNull(result.Prepared);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnDefaultMessage_WhenWeatherServiceFails()
+    {
+        // Arrange
+        _mockDateTimeProvider.Setup(x => x.Now).Returns(new DateTime(2025, 3, 31));
+        _mockApiCallCounterService.Setup(x => x.IncrementCounterAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(1);
+        _mockWeatherService.Setup(x => x.GetWeatherAsync(It.IsAny<string>()))
+            .ThrowsAsync(new Exception("Weather service error"));
 
         // Act
         var result = await _handler.Handle(new GetBrewCoffeeQuery(), CancellationToken.None);
