@@ -103,3 +103,4 @@ dotnet test
 3. Add Caching
 - Use an in-memory cache like IMemoryCache or a distributed cache like Redis.
 4. Add Logging and Monitoring
+5. Add unit tests for WeatherService
