@@ -43,21 +43,6 @@ This architecture ensures that the core business logic is independent of externa
 
 ---
 
-## In-Memory Database
-
-CoffeeApp uses an In-Memory Database for demonstration purposes. This database is lightweight and does not require any external setup, making it ideal for development and testing. 
-
-### Key Features:
-- Ephemeral Storage: Data is stored in memory and is lost when the application stops.
-- Ease of Use: No additional configuration or setup is required.
-- Extensibility: The in-memory database can be replaced with a relational database (e.g., SQL Server, PostgreSQL) or a NoSQL database with minimal changes.
-
-### Usage in CoffeeApp:
-- The in-memory database is used to store and manage the API call counter, which tracks the number of times the `/brew-coffee` endpoint is called.
-- This setup demonstrates how the application can interact with a database while adhering to Clean Architecture principles.
-
----
-
 
 How to run the project
 
@@ -76,5 +61,5 @@ dotnet test
 1. Use Transactions for Database Operations
 2. Improve Error Handling
 3. Add Caching
-•	Use an in-memory cache like IMemoryCache or a distributed cache like Redis.
+- Use an in-memory cache like IMemoryCache or a distributed cache like Redis.
 4. Add Logging and Monitoring
