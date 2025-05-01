@@ -10,10 +10,15 @@ public sealed record GetBrewCoffeeQuery : IRequest<GetBrewCoffeeQueryResponse>;
 public class GetBrewCoffeeQueryHandler(
     ILogger<GetBrewCoffeeQueryHandler> logger,
     IApiCallCounterService apiCallCounterService,
-    IDateTimeProvider dateTimeProvider) : IRequestHandler<GetBrewCoffeeQuery, GetBrewCoffeeQueryResponse>
+    IDateTimeProvider dateTimeProvider,
+    IWeatherService weatherService) : IRequestHandler<GetBrewCoffeeQuery, GetBrewCoffeeQueryResponse>
 {
     private const int ServiceUnavailableThreshold = 5;
-    private const string BrewedMessage = "Your piping hot coffee is ready";
+
+    private const string DefaultMessage = "Your piping hot coffee is ready";
+    private const string IcedCoffeeMessage = "Your refreshing iced coffee is ready";
+
+    private const string DefaultCity = "Hamilton,NZ";
 
     public async Task<GetBrewCoffeeQueryResponse> Handle(GetBrewCoffeeQuery request, CancellationToken cancellationToken)
     {
@@ -33,7 +38,27 @@ public class GetBrewCoffeeQueryHandler(
             return new GetBrewCoffeeQueryResponse(BrewCoffeeStatus.ServiceUnavailable, null, null);
         }
 
-        return new GetBrewCoffeeQueryResponse(BrewCoffeeStatus.Brewed, BrewedMessage, DateTime.Now);
+        var message = await GetMessageBasedOnWeather();
+
+        return new GetBrewCoffeeQueryResponse(BrewCoffeeStatus.Brewed, message, DateTime.Now);
+    }
+
+    private async Task<string> GetMessageBasedOnWeather()
+    {
+        var message = DefaultMessage;
+        try
+        {
+            var weatherResponse = await weatherService.GetWeatherAsync(DefaultCity);
+            if (weatherResponse.Temp > 30)
+            {
+                message = IcedCoffeeMessage;
+            }
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to get weather data");
+        }
+        return message;
     }
 
     private bool IsAprilFoolsDay()

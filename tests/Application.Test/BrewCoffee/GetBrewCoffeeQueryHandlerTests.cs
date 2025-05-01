@@ -10,6 +10,7 @@ public class GetBrewCoffeeQueryHandlerTests
     private readonly Mock<ILogger<GetBrewCoffeeQueryHandler>> _mockLogger;
     private readonly Mock<IApiCallCounterService> _mockApiCallCounterService;
     private readonly Mock<IDateTimeProvider> _mockDateTimeProvider;
+    private readonly Mock<IWeatherService> _mockWeatherService;
     private readonly GetBrewCoffeeQueryHandler _handler;
 
     public GetBrewCoffeeQueryHandlerTests()
@@ -17,10 +18,12 @@ public class GetBrewCoffeeQueryHandlerTests
         _mockLogger = new Mock<ILogger<GetBrewCoffeeQueryHandler>>();
         _mockApiCallCounterService = new Mock<IApiCallCounterService>();
         _mockDateTimeProvider = new Mock<IDateTimeProvider>();
+        _mockWeatherService = new Mock<IWeatherService>();
         _handler = new GetBrewCoffeeQueryHandler(
             _mockLogger.Object,
             _mockApiCallCounterService.Object,
-            _mockDateTimeProvider.Object
+            _mockDateTimeProvider.Object,
+            _mockWeatherService.Object
         );
     }
 
