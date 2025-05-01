@@ -1,7 +1,9 @@
 ﻿using Application.Abstraction;
 using Application.Abstraction.Dtos;
 using Application.BrewCoffee;
+using Application.Common.Configurations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 
 namespace Application.Tests.BrewCoffee;
@@ -12,6 +14,7 @@ public class GetBrewCoffeeQueryHandlerTests
     private readonly Mock<IApiCallCounterService> _mockApiCallCounterService;
     private readonly Mock<IDateTimeProvider> _mockDateTimeProvider;
     private readonly Mock<IWeatherService> _mockWeatherService;
+    private readonly IOptions<FeatureFlagsConfiguration> _mockFeatureFlags;
     private readonly GetBrewCoffeeQueryHandler _handler;
 
     public GetBrewCoffeeQueryHandlerTests()
@@ -20,11 +23,16 @@ public class GetBrewCoffeeQueryHandlerTests
         _mockApiCallCounterService = new Mock<IApiCallCounterService>();
         _mockDateTimeProvider = new Mock<IDateTimeProvider>();
         _mockWeatherService = new Mock<IWeatherService>();
+        _mockFeatureFlags = Options.Create(new FeatureFlagsConfiguration
+        {
+            EnableWeatherService = true
+        });
         _handler = new GetBrewCoffeeQueryHandler(
             _mockLogger.Object,
             _mockApiCallCounterService.Object,
             _mockDateTimeProvider.Object,
-            _mockWeatherService.Object
+            _mockWeatherService.Object,
+            _mockFeatureFlags
         );
     }
 
