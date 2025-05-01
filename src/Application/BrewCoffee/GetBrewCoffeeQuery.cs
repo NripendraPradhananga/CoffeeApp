@@ -1,7 +1,9 @@
 ﻿using Application.Abstraction;
+using Application.Common.Configurations;
 using Application.Common.Extensions;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Application.BrewCoffee;
 
@@ -11,7 +13,8 @@ public class GetBrewCoffeeQueryHandler(
     ILogger<GetBrewCoffeeQueryHandler> logger,
     IApiCallCounterService apiCallCounterService,
     IDateTimeProvider dateTimeProvider,
-    IWeatherService weatherService) : IRequestHandler<GetBrewCoffeeQuery, GetBrewCoffeeQueryResponse>
+    IWeatherService weatherService,
+    IOptions<FeatureFlagsConfiguration> featureFlagsOptions) : IRequestHandler<GetBrewCoffeeQuery, GetBrewCoffeeQueryResponse>
 {
     private const int ServiceUnavailableThreshold = 5;
 
@@ -19,6 +22,8 @@ public class GetBrewCoffeeQueryHandler(
     private const string IcedCoffeeMessage = "Your refreshing iced coffee is ready";
 
     private const string DefaultCity = "Hamilton,NZ";
+
+    private readonly FeatureFlagsConfiguration _featureFlags = featureFlagsOptions.Value;
 
     public async Task<GetBrewCoffeeQueryResponse> Handle(GetBrewCoffeeQuery request, CancellationToken cancellationToken)
     {
@@ -38,7 +43,11 @@ public class GetBrewCoffeeQueryHandler(
             return new GetBrewCoffeeQueryResponse(BrewCoffeeStatus.ServiceUnavailable, null, null);
         }
 
-        var message = await GetMessageBasedOnWeather();
+        var message = DefaultMessage;
+        if (_featureFlags.EnableWeatherService)
+        {
+            message = await GetMessageBasedOnWeather();
+        }
 
         return new GetBrewCoffeeQueryResponse(BrewCoffeeStatus.Brewed, message, DateTime.Now);
     }
