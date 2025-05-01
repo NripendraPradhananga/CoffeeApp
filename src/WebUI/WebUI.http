@@ -1,6 +1,6 @@
 @WebUI_HostAddress = http://localhost:5230
 
-GET {{WebUI_HostAddress}}/weatherforecast/
+GET {{WebUI_HostAddress}}/brew-coffee/
 Accept: application/json
 
 ###

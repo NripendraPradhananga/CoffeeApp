@@ -34,7 +34,7 @@ CoffeeApp is designed following the Clean Architecture principles to ensure a cl
 
 2. Application Layer:
    - Contains the core business logic and application-specific rules.
-   - efines interfaces (e.g., `IWeatherService`, `IApiCallCounterService`) that are implemented in the Infrastructure layer.
+   - Defines interfaces (e.g., `IWeatherService`, `IApiCallCounterService`) that are implemented in the Infrastructure layer.
    - Uses MediatR for handling CQRS patterns (e.g., `GetBrewCoffeeQuery`).
 
 3. Infrastructure Layer:
@@ -61,7 +61,6 @@ CoffeeApp uses an In-Memory Database for demonstration purposes. This database i
 
 ### Usage in CoffeeApp:
 - The in-memory database is used to store and manage the API call counter, which tracks the number of times the `/brew-coffee` endpoint is called.
-- This setup demonstrates how the application can interact with a database while adhering to Clean Architecture principles.
 
 ---
 ## OpenWeather API Integration
